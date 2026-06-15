@@ -267,7 +267,7 @@ wheels = [
 ]
 
 [[package]]
-name = "kurocode"
+name = "kurocode-cli"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

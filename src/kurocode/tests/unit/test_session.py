@@ -36,7 +36,7 @@ class TestMessage:
 
     def test_all_valid_roles(self) -> None:
         for role in ("system", "user", "assistant"):
-            msg = Message(role=role, content="x")  # type: ignore[arg-type]
+            msg = Message(role=role, content="x")
             assert msg.role == role
 
 

@@ -36,7 +36,9 @@ def chat_cmd(ctx: CliContext, model: str, resume: str | None) -> None:
 async def run_chat(ctx: CliContext, model: str, resume: str | None) -> None:
     history_file = Path.home() / ".local" / "share" / "kurocode" / "prompt_history.txt"
     history_file.parent.mkdir(parents=True, exist_ok=True)
-    prompt_session = PromptSession(history=FileHistory(str(history_file)))
+    prompt_session: PromptSession[str] = PromptSession(
+        history=FileHistory(str(history_file))
+    )
     session = Session(model_id=model)
 
     async with ConversationStore(ctx.config.db_path) as store:

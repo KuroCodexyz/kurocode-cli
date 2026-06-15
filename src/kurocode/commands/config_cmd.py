@@ -2,6 +2,7 @@
 config command for KuroCode.
 """
 
+import contextlib
 import os
 import tomllib
 from pathlib import Path
@@ -87,10 +88,8 @@ def set_config(ctx: CliContext, key: str, value: str, profile: str | None) -> No
     elif value.lower() == "false":
         final_value = False
     else:
-        try:
+        with contextlib.suppress(ValueError):
             final_value = float(value) if "." in value else int(value)
-        except ValueError:
-            pass
 
     target[key] = final_value
 

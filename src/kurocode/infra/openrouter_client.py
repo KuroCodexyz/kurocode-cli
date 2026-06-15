@@ -34,6 +34,7 @@ Usage::
 
 from __future__ import annotations
 
+import contextlib
 import json
 from collections.abc import AsyncGenerator
 from typing import Any, Literal
@@ -126,10 +127,8 @@ def _raise_for_status(response: httpx.Response) -> None:
         retry_after: float | None = None
         raw_ra = response.headers.get("Retry-After")
         if raw_ra is not None:
-            try:
+            with contextlib.suppress(ValueError):
                 retry_after = float(raw_ra)
-            except ValueError:
-                pass
         raise RateLimitError(response_body=body, retry_after=retry_after)
 
     raise APIError(
@@ -143,9 +142,7 @@ def _is_retryable(exc: BaseException) -> bool:
     """Return ``True`` for transient errors worth retrying."""
     if isinstance(exc, RateLimitError):
         return True
-    if isinstance(exc, APIError) and exc.status_code >= 500:
-        return True
-    return False
+    return bool(isinstance(exc, APIError) and exc.status_code >= 500)
 
 
 # ---------------------------------------------------------------------------

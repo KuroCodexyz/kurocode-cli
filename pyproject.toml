@@ -47,7 +47,7 @@ select = [
     "ANN", # flake8-annotations
     "RUF", # ruff-specific rules
 ]
-ignore = ["ANN101", "ANN102"]
+ignore = ["ANN401", "E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["kurocode"]

@@ -24,6 +24,7 @@ from kurocode.core.model_registry import (
     _model_to_dict,
     _parse_model,
 )
+
 # ---------------------------------------------------------------------------
 # Fixtures / helpers
 # ---------------------------------------------------------------------------
@@ -183,7 +184,7 @@ class TestModelRegistryMemoryCache:
         """``force_refresh=True`` must bypass memory cache and attempt network."""
 
         class _FailingClient:
-            async def get(self, *args: object, **kwargs: object) -> None:  # type: ignore[override]
+            async def get(self, *args: object, **kwargs: object) -> None:
                 raise httpx.ConnectError("simulated failure")
 
         registry = ModelRegistry(
@@ -283,7 +284,7 @@ class TestModelRegistryDiskCache:
         cache_file.write_text(_disk_payload([_make_model(7)]), encoding="utf-8")
 
         class _FailingClient:
-            async def get(self, *args: object, **kwargs: object) -> None:  # type: ignore[override]
+            async def get(self, *args: object, **kwargs: object) -> None:
                 raise httpx.ConnectError("offline")
 
         registry = ModelRegistry(
@@ -300,7 +301,7 @@ class TestModelRegistryDiskCache:
 
     async def test_offline_no_cache_raises(self, tmp_path: Path) -> None:
         class _FailingClient:
-            async def get(self, *args: object, **kwargs: object) -> None:  # type: ignore[override]
+            async def get(self, *args: object, **kwargs: object) -> None:
                 raise httpx.ConnectError("offline")
 
         registry = ModelRegistry(
