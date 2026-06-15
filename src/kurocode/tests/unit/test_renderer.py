@@ -10,12 +10,10 @@ from __future__ import annotations
 import io
 import json
 
-import pytest
 from rich.console import Console
 
 from kurocode.core.model_registry import ModelInfo
 from kurocode.core.renderer import OutputFormat, Renderer
-
 
 # ---------------------------------------------------------------------------
 # Helpers

@@ -1,0 +1,17 @@
+name: Publish
+on:
+  push:
+    tags: ["v*"] # only runs when you push a version tag
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi # links to the PyPI trusted publisher
+    permissions:
+      id-token: write # needed for OIDC trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with: { python-version: "3.12" }
+      - run: uv build
+      - uses: pypa/gh-action-pypi-publish@release/v1

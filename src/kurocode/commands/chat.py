@@ -2,19 +2,19 @@
 chat command for KuroCode.
 """
 
-import sys
 import asyncio
+import sys
 from pathlib import Path
-import click
 
+import click
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-from kurocode.types import CliContext
 from kurocode.core.session import Session
 from kurocode.infra.openrouter_client import OpenRouterClient
 from kurocode.infra.store import ConversationStore
+from kurocode.types import CliContext
 
 
 @click.command()
@@ -36,7 +36,6 @@ def chat_cmd(ctx: CliContext, model: str, resume: str | None) -> None:
 async def run_chat(ctx: CliContext, model: str, resume: str | None) -> None:
     history_file = Path.home() / ".local" / "share" / "kurocode" / "prompt_history.txt"
     history_file.parent.mkdir(parents=True, exist_ok=True)
-    
     prompt_session = PromptSession(history=FileHistory(str(history_file)))
     session = Session(model_id=model)
 
@@ -98,7 +97,7 @@ async def run_chat(ctx: CliContext, model: str, resume: str | None) -> None:
                 except KeyboardInterrupt:
                     ctx.renderer.end_stream()
                     ctx.renderer.info("\n[Stream interrupted. Saving partial response...]")
-                
+
                 full_response = "".join(assistant_response)
                 if full_response:
                     session.add_assistant_message(full_response)
@@ -117,18 +116,18 @@ async def handle_slash_command(cmd: str, session: Session, ctx: CliContext) -> N
         ctx.renderer.info("  /model <m>  - Alias for /switch")
         ctx.renderer.info("  /clear      - Clear current session context")
         ctx.renderer.info("  /save <f>   - Save current session to a file")
-        
+
     elif command in ("/switch", "/model"):
         if not arg:
             ctx.renderer.error("Usage: /switch <model_id>")
             return
         session.model_id = arg
         ctx.renderer.info(f"Switched model to: {arg}")
-        
+
     elif command == "/clear":
         session.messages.clear()
         ctx.renderer.info("Session cleared.")
-        
+
     elif command == "/save":
         if not arg:
             ctx.renderer.error("Usage: /save <filename>")

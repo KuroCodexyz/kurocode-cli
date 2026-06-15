@@ -2,12 +2,13 @@
 history command for KuroCode.
 """
 
-import click
 import asyncio
 from datetime import datetime
 
-from kurocode.types import CliContext
+import click
+
 from kurocode.infra.store import ConversationStore
+from kurocode.types import CliContext
 
 
 @click.group(name="history")
@@ -27,11 +28,11 @@ def list_history(ctx: CliContext, limit: int) -> None:
 async def run_list(ctx: CliContext, limit: int) -> None:
     async with ConversationStore(ctx.config.db_path) as store:
         conversations = await store.list_conversations(limit=limit)
-        
+
     if not conversations:
         ctx.renderer.info("No conversations found.")
         return
-        
+
     for c in conversations:
         dt = datetime.fromtimestamp(c.created_at).strftime("%Y-%m-%d %H:%M:%S")
         ctx.renderer.info(f"[{c.id}] {dt} - {c.model} - {c.title}")
@@ -48,11 +49,11 @@ def view_history(ctx: CliContext, conv_id: str) -> None:
 async def run_run(ctx: CliContext, conv_id: str) -> None:
     async with ConversationStore(ctx.config.db_path) as store:
         messages = await store.get_messages(conv_id)
-        
+
     if not messages:
         ctx.renderer.error(f"Conversation '{conv_id}' not found or empty.")
         return
-        
+
     for m in messages:
         dt = datetime.fromtimestamp(m.created_at).strftime("%Y-%m-%d %H:%M:%S")
         ctx.renderer.info(f"[{dt}] **{m.role.upper()}**:\n{m.content}\n")
@@ -70,10 +71,10 @@ def export_history(ctx: CliContext, conv_id: str, fmt: str) -> None:
 async def run_export(ctx: CliContext, conv_id: str, fmt: str) -> None:
     async with ConversationStore(ctx.config.db_path) as store:
         messages = await store.get_messages(conv_id)
-        
+
     if not messages:
         ctx.renderer.error(f"Conversation '{conv_id}' not found or empty.")
         return
-        
+
     for m in messages:
         click.echo(f"**{m.role.capitalize()}**:\n{m.content}\n")

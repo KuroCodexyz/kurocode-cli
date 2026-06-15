@@ -123,7 +123,7 @@ class ConversationStore:
     # Context manager
     # ------------------------------------------------------------------
 
-    async def __aenter__(self) -> "ConversationStore":
+    async def __aenter__(self) -> ConversationStore:
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             conn = await aiosqlite.connect(self._db_path)

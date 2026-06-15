@@ -187,7 +187,7 @@ class OpenRouterClient:
             timeout=httpx.Timeout(s.timeout),
         )
 
-    async def __aenter__(self) -> "OpenRouterClient":
+    async def __aenter__(self) -> OpenRouterClient:
         self._client = self._build_client()
         return self
 

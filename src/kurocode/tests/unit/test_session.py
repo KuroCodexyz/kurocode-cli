@@ -10,10 +10,7 @@ from __future__ import annotations
 import time
 import uuid
 
-import pytest
-
 from kurocode.core.session import Message, Session
-
 
 # ---------------------------------------------------------------------------
 # Message

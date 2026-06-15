@@ -2,11 +2,12 @@
 models command for KuroCode.
 """
 
-import click
 import asyncio
 
-from kurocode.types import CliContext
+import click
+
 from kurocode.core.model_registry import ModelRegistry
+from kurocode.types import CliContext
 
 
 @click.group(name="models")

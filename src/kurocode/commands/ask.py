@@ -2,15 +2,17 @@
 ask command for KuroCode.
 """
 
-import sys
-import json
 import asyncio
+import json
+import sys
+
 import click
 
-from kurocode.types import CliContext
-from kurocode.core.session import Session
 from kurocode.core.renderer import OutputFormat
+from kurocode.core.session import Session
 from kurocode.infra.openrouter_client import OpenRouterClient
+from kurocode.types import CliContext
+
 
 @click.command()
 @click.argument("prompt", required=False)
@@ -26,9 +28,9 @@ def ask_cmd(ctx: CliContext, prompt: str | None, model: str) -> None:
         if not sys.stdin.isatty():
             prompt = sys.stdin.read().strip()
         else:
-            ctx.renderer.error("No prompt provided. Please pass a prompt or pipe to stdin.")
+            ctx.renderer.error("No prompt provided. Please pass a prompt.")
             sys.exit(1)
-            
+
     if not prompt:
         ctx.renderer.error("Empty prompt provided.")
         sys.exit(1)
@@ -45,7 +47,7 @@ async def run_ask(ctx: CliContext, prompt: str, model: str) -> None:
         if ctx.no_stream:
             resp = await client.chat(messages=messages, model=model)
             content = resp.choices[0].message.content
-            
+
             # Pipe-friendly JSON output for `jq .content`
             if ctx.renderer._fmt == OutputFormat.JSON:
                 ctx.renderer._console.print(

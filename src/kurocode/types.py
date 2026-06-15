@@ -3,6 +3,7 @@ Shared types and context for KuroCode CLI.
 """
 
 from dataclasses import dataclass
+
 from kurocode.core.renderer import Renderer
 from kurocode.infra.config import Settings
 

@@ -2,14 +2,15 @@
 config command for KuroCode.
 """
 
-import click
 import os
 import tomllib
-from typing import Any
 from pathlib import Path
+from typing import Any
 
-from kurocode.types import CliContext
+import click
+
 from kurocode.infra.config import load_config
+from kurocode.types import CliContext
 
 _DEFAULT_CONFIG_PATH = Path.home() / ".config" / "kurocode" / "config.toml"
 
@@ -23,7 +24,7 @@ def config_cmd_group() -> None:
 def _dump_toml(d: dict[str, Any]) -> str:
     """Naive TOML dumper for KuroCode config structures."""
     lines = []
-    
+
     def format_val(val: Any) -> str:
         if isinstance(val, bool):
             return str(val).lower()
@@ -36,7 +37,7 @@ def _dump_toml(d: dict[str, Any]) -> str:
     for k, v in d.items():
         if not isinstance(v, dict):
             lines.append(f"{k} = {format_val(v)}")
-            
+
     # Sections
     for k, v in d.items():
         if isinstance(v, dict):
@@ -50,7 +51,7 @@ def _dump_toml(d: dict[str, Any]) -> str:
                 lines.append(f"\n[{k}]")
                 for sk, sv in v.items():
                     lines.append(f"{sk} = {format_val(sv)}")
-                    
+
     return "\n".join(lines).strip() + "\n"
 
 
@@ -63,14 +64,14 @@ def set_config(ctx: CliContext, key: str, value: str, profile: str | None) -> No
     """Set a configuration value."""
     config_env = os.environ.get("KUROCODE_CONFIG")
     toml_path = Path(config_env) if config_env else _DEFAULT_CONFIG_PATH
-    
+
     if toml_path.exists():
         with toml_path.open("rb") as f:
             doc = tomllib.load(f)
     else:
         doc = {}
         toml_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
     if profile:
         doc.setdefault("profiles", {})
         doc["profiles"].setdefault(profile, {})
@@ -78,7 +79,7 @@ def set_config(ctx: CliContext, key: str, value: str, profile: str | None) -> No
     else:
         doc.setdefault("default", {})
         target = doc["default"]
-        
+
     # Attempt to cast value to int or float if possible
     final_value: Any = value
     if value.lower() == "true":
@@ -87,18 +88,15 @@ def set_config(ctx: CliContext, key: str, value: str, profile: str | None) -> No
         final_value = False
     else:
         try:
-            if "." in value:
-                final_value = float(value)
-            else:
-                final_value = int(value)
+            final_value = float(value) if "." in value else int(value)
         except ValueError:
             pass
-            
+
     target[key] = final_value
-    
+
     with toml_path.open("w", encoding="utf-8") as f:
         f.write(_dump_toml(doc))
-        
+
     p_name = f"profiles.{profile}" if profile else "default"
     ctx.renderer.success(f"Set '{key}' = '{value}' in [{p_name}].")
 
@@ -108,11 +106,8 @@ def set_config(ctx: CliContext, key: str, value: str, profile: str | None) -> No
 @click.pass_obj
 def list_config(ctx: CliContext, profile: str | None) -> None:
     """List current resolved configuration."""
-    if profile:
-        cfg = load_config(profile=profile)
-    else:
-        cfg = ctx.config
-    
+    cfg = load_config(profile=profile) if profile else ctx.config
+
     data = cfg.model_dump(mode="json")
     for k, v in data.items():
         if k == "api_key":

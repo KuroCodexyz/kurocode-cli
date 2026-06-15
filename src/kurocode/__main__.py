@@ -1,7 +1,6 @@
 """
 Main CLI entry point for KuroCode.
 """
-
 from __future__ import annotations
 
 import sys
@@ -9,17 +8,16 @@ from typing import Any
 
 import click
 
+# We will import commands lazily or directly below.
+from kurocode.commands.ask import ask_cmd
+from kurocode.commands.chat import chat_cmd
+from kurocode.commands.config_cmd import config_cmd_group
+from kurocode.commands.history import history_cmd
+from kurocode.commands.models import models_cmd
 from kurocode.core.renderer import OutputFormat, Renderer
 from kurocode.exceptions import KurocodeError
 from kurocode.infra.config import load_config
 from kurocode.types import CliContext
-
-# We will import commands lazily or directly below.
-from kurocode.commands.ask import ask_cmd
-from kurocode.commands.chat import chat_cmd
-from kurocode.commands.models import models_cmd
-from kurocode.commands.history import history_cmd
-from kurocode.commands.config_cmd import config_cmd_group
 
 
 class KuroCodeGroup(click.Group):
@@ -33,7 +31,6 @@ class KuroCodeGroup(click.Group):
             renderer = None
             if ctx.obj is not None and hasattr(ctx.obj, "renderer"):
                 renderer = ctx.obj.renderer
-            
             if renderer is None:
                 # Fallback if config loading failed before ctx.obj was set
                 fmt_str = ctx.params.get("output_format", "rich")
@@ -73,7 +70,7 @@ def cli(
     fmt = OutputFormat(output_format)
     renderer = Renderer(fmt=fmt)
     config = load_config(profile=profile)
-    
+
     ctx.obj = CliContext(
         renderer=renderer,
         config=config,

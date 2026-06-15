@@ -177,6 +177,6 @@ class Renderer:
             return
 
         if self._fmt == OutputFormat.RICH:
-            self._console.print(f"[blue]ℹ[/blue] {msg}")
+            self._console.print(f"[blue]I[/blue] {msg}")
         else:
             self._console.print(msg, markup=False)
