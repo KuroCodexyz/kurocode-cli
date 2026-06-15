@@ -1,0 +1,124 @@
+# KuroCode
+
+KuroCode CLI is a Python-based terminal application that allows developers to access and interact with OpenRouter's free AI models directly from the command line. The goal is to provide a lightweight, fast, and developer-friendly alternative to web-based AI interfaces, enabling model discovery, interactive chatting, model switching, conversation history, and streaming responses entirely within the terminal.
+
+## Installation
+
+KuroCode can be installed locally from the repository. We recommend using a virtual environment:
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd KuroCode
+
+# Install dependencies and the package
+pip install -e .
+```
+
+## Configuration
+
+Before you start, you must configure your OpenRouter API key. You can do this via an environment variable, a `.env` file, or by using the `config` command.
+
+```bash
+# Option 1: Using the config command (saved to ~/.config/kurocode/config.toml)
+kurocode config set api_key "sk-or-v1-..."
+
+# Option 2: Environment Variable
+export KUROCODE_API_KEY="sk-or-v1-..."
+```
+
+You can view your current resolved configuration by running:
+```bash
+kurocode config list
+```
+
+---
+
+## User Guide & Command Surface
+
+### 1. One-Shot Queries (`ask`)
+For quick questions or scripting tasks, use the `ask` command. It is pipe-friendly and supports raw JSON outputs.
+
+```bash
+# Basic query (defaults to openai/gpt-4o-mini)
+kurocode ask "Explain async/await in Python"
+
+# Specify a different model
+kurocode ask "What is the capital of France?" --model anthropic/claude-3-haiku
+
+# Pipe friendly: Read from stdin
+cat main.py | kurocode ask "Find the bug in this code"
+
+# JSON output mode (ideal for jq)
+kurocode --output-format json --no-stream ask "Explain async/await" | jq .content
+```
+
+### 2. Interactive REPL (`chat`)
+Launch an interactive, persistent chat session powered by `prompt_toolkit`.
+
+```bash
+# Start a new chat session
+kurocode chat
+
+# Start a chat with a specific model
+kurocode chat --model anthropic/claude-3-haiku
+
+# Resume a previous conversation by ID
+kurocode chat --resume <conversation_id>
+```
+
+**Inside the Chat REPL:**
+- Press `Ctrl+C` while the AI is responding to cleanly interrupt the stream. The partial response will be saved into history.
+- Press `Ctrl+D` or `Ctrl+C` at the prompt to exit the chat.
+- Use slash commands to control the session:
+  - `/help`: Show available commands.
+  - `/switch <model_id>` (or `/model <model_id>`): Switch the current model seamlessly.
+  - `/clear`: Clear the session's context without exiting.
+  - `/save <filename>`: Save the current session transcript to a markdown file.
+
+### 3. Model Discovery (`models`)
+Explore and search through the available free models on OpenRouter.
+
+```bash
+# List all free models (rendered as a rich table)
+kurocode models list
+
+# Force refresh the models cache from OpenRouter
+kurocode models list --refresh
+
+# Search for models by name or ID
+kurocode models search "mistral"
+
+# Get detailed information about a specific model
+kurocode models info openai/gpt-4o-mini
+```
+
+### 4. Conversation History (`history`)
+KuroCode persists your interactive conversations locally in an SQLite database (by default at `~/.local/share/kurocode/history.db`).
+
+```bash
+# List recent conversations
+kurocode history list --limit 20
+
+# View the full transcript of a specific conversation
+kurocode history view <conversation_id>
+
+# Export a conversation to markdown
+kurocode history export <conversation_id> --format markdown > transcript.md
+```
+
+### 5. Global Options
+KuroCode supports several global flags that can be applied to the base `kurocode` command before the subcommand:
+
+- `--profile <name>`: Load a specific configuration profile from your TOML file.
+  ```bash
+  kurocode --profile work config list
+  ```
+- `--output-format <rich|plain|json>`: Change the output rendering style.
+  ```bash
+  kurocode --output-format plain models list
+  ```
+- `--no-stream`: Wait for the full response instead of streaming tokens (useful for scripting).
+  ```bash
+  kurocode --no-stream ask "Tell me a joke"
+  ```
