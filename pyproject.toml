@@ -1,5 +1,5 @@
 [project]
-name = "kurocode"
+name = "kurocode-cli"
 version = "0.1.0"
 description = "A lightweight terminal client for OpenRouter's free AI models"
 readme = "README.md"
