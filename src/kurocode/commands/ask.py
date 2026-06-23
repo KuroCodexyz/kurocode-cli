@@ -18,7 +18,7 @@ from kurocode.types import CliContext
 @click.argument("prompt", required=False)
 @click.option(
     "--model",
-    default="openai/gpt-4o-mini",
+    default="openrouter/owl-alpha",
     help="Model to use for the response.",
 )
 @click.pass_obj

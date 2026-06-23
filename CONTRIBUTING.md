@@ -6,9 +6,9 @@ Thank you for considering contributing to **KuroCode**!
 
 1. **Clone the repository** and install the development dependencies:
    ```bash
-   git clone <repo-url>
-   cd KuroCode
-   uv sync --dev   # or `pip install -r requirements.txt`
+   git clone https://github.com/KuroCodexyz/KuroCodexyz.git
+   cd KuroCodexyz/kurocode-cli
+   pip install -e ".[dev]"   # or: uv sync --all-extras
    ```
 2. **Run tests** to ensure the environment is set up correctly:
    ```bash

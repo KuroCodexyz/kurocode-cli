@@ -20,7 +20,7 @@ from kurocode.types import CliContext
 @click.command()
 @click.option(
     "--model",
-    default="openai/gpt-4o-mini",
+    default="openrouter/owl-alpha",
     help="Model to use for the response.",
 )
 @click.option(
